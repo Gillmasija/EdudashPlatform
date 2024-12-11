@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    {% if profile_user.profile_picture %}
+                        <img src="{{ profile_user.profile_picture.url }}" alt="Profile Picture" 
+                             class="rounded-circle img-thumbnail mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                    {% else %}
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3"
+                             style="width: 150px; height: 150px; font-size: 48px;">
+                            {{ profile_user.full_name|make_list|first }}
+                        </div>
+                    {% endif %}
+                    <h3 class="mb-0">{{ profile_user.full_name }}</h3>
+                    <p class="text-muted">{{ profile_user.get_role_display }}</p>
+                    {% if user == profile_user %}
+                        <a href="{% url 'profile_edit' %}" class="btn btn-primary">Edit Profile</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5 class="card-title">About</h5>
+                    <p>{{ profile_user.bio|default:"No bio available." }}</p>
+                    
+                    <h5 class="card-title mt-4">Contact Information</h5>
+                    {% if profile_user.phone_number %}
+                        <p><strong>Phone:</strong> {{ profile_user.phone_number }}</p>
+                    {% endif %}
+                    {% if profile_user.whatsapp_number %}
+                        <p><strong>WhatsApp:</strong> {{ profile_user.whatsapp_number }}</p>
+                    {% endif %}
+                    
+                    {% if profile_user.role == 'teacher' %}
+                        <h5 class="card-title mt-4">Students</h5>
+                        <div class="list-group">
+                            {% for student in profile_user.students.all %}
+                                <a href="{% url 'profile' student.username %}" class="list-group-item list-group-item-action">
+                                    {{ student.full_name }}
+                                </a>
+                            {% empty %}
+                                <p class="text-muted">No students assigned yet.</p>
+                            {% endfor %}
+                        </div>
+                    {% elif profile_user.role == 'student' and profile_user.teacher %}
+                        <h5 class="card-title mt-4">Teacher</h5>
+                        <a href="{% url 'profile' profile_user.teacher.username %}" class="text-decoration-none">
+                            {{ profile_user.teacher.full_name }}
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

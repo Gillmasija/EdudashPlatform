@@ -1,6 +1,6 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
-from .models import CustomUser
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from .models import CustomUser, Message
 
 class UserRegistrationForm(UserCreationForm):
     full_name = forms.CharField(max_length=255)
@@ -30,3 +30,21 @@ class UserRegistrationForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['teacher'].queryset = CustomUser.objects.filter(role='teacher')
+
+class UserProfileForm(UserChangeForm):
+    password = None  # Remove password field from the form
+
+    class Meta:
+        model = CustomUser
+        fields = ('full_name', 'bio', 'profile_picture', 'phone_number', 'whatsapp_number')
+        widgets = {
+            'bio': forms.Textarea(attrs={'rows': 4}),
+        }
+
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ('content',)
+        widgets = {
+            'content': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Type your message here...'}),
+        }

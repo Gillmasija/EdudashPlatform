@@ -4,7 +4,7 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-your-secret-key-here'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-your-secret-key-here')
 DEBUG = True
 ALLOWED_HOSTS = ['*']
 
@@ -56,10 +56,20 @@ WSGI_APPLICATION = 'edudash.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('PGDATABASE', ''),
+        'USER': os.environ.get('PGUSER', ''),
+        'PASSWORD': os.environ.get('PGPASSWORD', ''),
+        'HOST': os.environ.get('PGHOST', ''),
+        'PORT': os.environ.get('PGPORT', '5432'),
     }
 }
+
+if not all([DATABASES['default']['NAME'], 
+           DATABASES['default']['USER'], 
+           DATABASES['default']['PASSWORD'],
+           DATABASES['default']['HOST']]):
+    raise ValueError("Database configuration is incomplete. Please check environment variables.")
 
 AUTH_PASSWORD_VALIDATORS = [
     {

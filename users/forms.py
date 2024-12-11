@@ -1,10 +1,10 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser
 
 class UserRegistrationForm(UserCreationForm):
-    role = forms.ChoiceField(choices=CustomUser.ROLE_CHOICES)
     full_name = forms.CharField(max_length=255)
+    role = forms.ChoiceField(choices=CustomUser.ROLE_CHOICES)
     teacher = forms.ModelChoiceField(
         queryset=CustomUser.objects.filter(role='teacher'),
         required=False,
@@ -14,10 +14,6 @@ class UserRegistrationForm(UserCreationForm):
     class Meta:
         model = CustomUser
         fields = ('username', 'full_name', 'role', 'teacher', 'password1', 'password2')
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['teacher'].queryset = CustomUser.objects.filter(role='teacher')
 
     def clean(self):
         cleaned_data = super().clean()
@@ -31,7 +27,6 @@ class UserRegistrationForm(UserCreationForm):
 
         return cleaned_data
 
-class CustomAuthenticationForm(AuthenticationForm):
-    class Meta:
-        model = CustomUser
-        fields = ('username', 'password')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['teacher'].queryset = CustomUser.objects.filter(role='teacher')

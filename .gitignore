@@ -41,6 +41,8 @@ vite.config.ts.*
 .env
 .env.local
 .env.*.local
+.env.development
+.env.production
 
 # IDE
 .idea/
@@ -56,3 +58,11 @@ vite.config.ts.*
 *.tar.gz
 *.zip
 *.rar
+
+# Replit specific
+.replit
+.breakpoints
+replit.nix
+.config/
+.upm/
+.cache/

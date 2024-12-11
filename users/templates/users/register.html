@@ -2,18 +2,45 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container min-vh-100 d-flex align-items-center justify-content-center">
-    <div class="card shadow-sm" style="width: 400px;">
-        <div class="card-body">
-            <h2 class="card-title text-center mb-4">Join Our Community</h2>
-            <form method="post">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <button type="submit" class="btn btn-primary w-100 mt-3">Register</button>
-                <p class="text-center mt-3">
-                    Already have an account? <a href="{% url 'login' %}">Login</a>
-                </p>
-            </form>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-pattern">
+                <div class="card-header">
+                    <h2 class="text-center mb-0">Join Our Community</h2>
+                </div>
+                <div class="card-body" style="background-color: var(--background);">
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.username|as_crispy_field }}
+                                {{ form.full_name|as_crispy_field }}
+                                {{ form.role|as_crispy_field }}
+                                {{ form.teacher|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.phone_number|as_crispy_field }}
+                                {{ form.whatsapp_number|as_crispy_field }}
+                                {{ form.profile_picture|as_crispy_field }}
+                                {{ form.password1|as_crispy_field }}
+                                {{ form.password2|as_crispy_field }}
+                            </div>
+                        </div>
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+                                Please correct the errors below.
+                            </div>
+                        {% endif %}
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">Register</button>
+                        </div>
+                        <p class="text-center mt-3">
+                            Already have an account? <a href="{% url 'login' %}" class="text-decoration-none" style="color: var(--accent);">Login</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>

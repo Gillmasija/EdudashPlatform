@@ -1,6 +1,6 @@
-import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import { relations } from "drizzle-orm";
+import { relations, type InferModel } from "drizzle-orm";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -11,6 +11,9 @@ export const users = pgTable("users", {
   teacherId: integer("teacher_id").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
 });
+
+export type User = InferModel<typeof users, "select">;
+export type InsertUser = InferModel<typeof users, "insert">;
 
 export const assignments = pgTable("assignments", {
   id: serial("id").primaryKey(),

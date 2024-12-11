@@ -8,6 +8,8 @@ class UserRegistrationForm(UserCreationForm):
     phone_number = forms.CharField(max_length=15, required=False)
     whatsapp_number = forms.CharField(max_length=15, required=False)
     profile_picture = forms.ImageField(required=False)
+    password1 = forms.CharField(widget=forms.PasswordInput)
+    password2 = forms.CharField(widget=forms.PasswordInput, label='Confirm Password')
     teacher = forms.ModelChoiceField(
         queryset=CustomUser.objects.filter(role='teacher'),
         required=False,

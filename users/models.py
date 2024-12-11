@@ -11,8 +11,9 @@ class CustomUser(AbstractUser):
     full_name = models.CharField(max_length=255)
     bio = models.TextField(blank=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
-    phone_number = models.CharField(max_length=15, blank=True)
-    whatsapp_number = models.CharField(max_length=15, blank=True)
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    whatsapp_number = models.CharField(max_length=15, blank=True, null=True)
+    password_changed = models.DateTimeField(null=True, blank=True)
     teacher = models.ForeignKey(
         'self', 
         on_delete=models.SET_NULL, 

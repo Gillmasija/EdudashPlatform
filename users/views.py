@@ -9,17 +9,47 @@ from .models import CustomUser, Message
 
 def register(request):
     if request.method == 'POST':
-        form = UserRegistrationForm(request.POST)
+        form = UserRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
+            user.full_name = form.cleaned_data['full_name']
+            if form.cleaned_data['role'] == 'teacher':
+                if not form.cleaned_data['phone_number'] or not form.cleaned_data['whatsapp_number']:
+                    messages.error(request, 'Phone and WhatsApp numbers are required for teachers')
+                    return render(request, 'users/register.html', {'form': form})
+            user.save()
             login(request, user)
             messages.success(request, 'Registration successful!')
             return redirect('dashboard')
+        else:
+            for error in form.errors.values():
+                messages.error(request, error)
     else:
         form = UserRegistrationForm()
     return render(request, 'users/register.html', {'form': form})
 
 def user_login(request):
+    if request.headers.get('Content-Type') == 'application/json':
+        import json
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+        from django.contrib.auth import authenticate
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return JsonResponse({
+                'status': 'success',
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'role': user.role,
+                    'full_name': user.full_name
+                }
+            })
+        else:
+            return JsonResponse({'status': 'error', 'message': 'Invalid credentials'}, status=400)
+    
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -76,6 +106,15 @@ def messages_view(request):
 
 @login_required
 def send_message(request, receiver_id):
+def get_user_info(request):
+    if request.user.is_authenticated:
+        return JsonResponse({
+            'id': request.user.id,
+            'username': request.user.username,
+            'role': request.user.role,
+            'full_name': request.user.full_name
+        })
+    return JsonResponse({'status': 'error'}, status=401)
     receiver = get_object_or_404(CustomUser, id=receiver_id)
     
     if request.method == 'POST':

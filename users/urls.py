@@ -10,4 +10,5 @@ urlpatterns = [
     path('profile/<str:username>/', views.profile_view, name='profile'),
     path('messages/', views.messages_view, name='messages'),
     path('messages/send/<int:receiver_id>/', views.send_message, name='send_message'),
+    path('api/user/', views.get_user_info, name='get_user_info'),
 ]
